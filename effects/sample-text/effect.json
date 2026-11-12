@@ -1,0 +1,14 @@
+{
+  "name": "範例：淡入文字",
+  "name_en": "Sample: fade-in text",
+  "category": "字卡",
+  "duration": 3,
+  "fps": 30,
+  "params": [
+    { "key": "text",  "type": "text",   "label": "文字", "label_en": "Text",  "default": "MotionShelf" },
+    { "key": "font",  "type": "font",   "label": "字體", "label_en": "Font",  "default": "Helvetica Neue" },
+    { "key": "color", "type": "color",  "label": "顏色", "label_en": "Color", "default": "#FFFFFF" },
+    { "key": "size",  "type": "number", "label": "字級", "label_en": "Size",  "default": 120, "min": 40, "max": 300, "step": 1 }
+  ],
+  "check": { "time": 1, "params": { "text": "Hello", "color": "#FF5A36" } }
+}

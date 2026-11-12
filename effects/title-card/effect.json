@@ -1,0 +1,20 @@
+{
+  "name": "文字字卡",
+  "name_en": "Title card",
+  "category": "字卡",
+  "duration": 4,
+  "fps": 30,
+  "params": [
+    { "key": "text",   "type": "text",   "label": "文字",     "label_en": "Text",   "default": "MotionShelf" },
+    { "key": "font",   "type": "font",   "label": "字體",     "label_en": "Font",   "default": "Helvetica Neue" },
+    { "key": "color",  "type": "color",  "label": "顏色",     "label_en": "Color",  "default": "#FFFFFF" },
+    { "key": "style",  "type": "select", "label": "動畫方式", "label_en": "Style",  "default": "淡入",
+      "options": ["淡入", "逐字出現", "旋轉進場", "由下滑入"], "options_en": ["Fade in", "Letter by letter", "Spin in", "Slide up"] },
+    { "key": "size",   "type": "number", "label": "字級",     "label_en": "Size",   "default": 140, "min": 40, "max": 300, "step": 1 },
+    { "key": "weight", "type": "number", "label": "粗細",     "label_en": "Weight", "default": 700, "min": 100, "max": 900, "step": 100 },
+    { "key": "speed",  "type": "number", "label": "進場速度", "label_en": "Speed",  "default": 1, "min": 0.3, "max": 3, "step": 0.1 },
+    { "key": "outro",  "type": "select", "label": "結尾",     "label_en": "Ending", "default": "淡出",
+      "options": ["淡出", "停住"], "options_en": ["Fade out", "Hold"] }
+  ],
+  "check": { "time": 2, "params": { "text": "Hello", "style": "逐字出現", "color": "#FF5A36" } }
+}

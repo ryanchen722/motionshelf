@@ -1,0 +1,15 @@
+{
+  "name": "motionshelf",
+  "description": "MotionShelf: make transparent motion-graphics effects from prompts with Claude Code.",
+  "owner": {
+    "name": "ryanchen722",
+    "url": "https://github.com/ryanchen722"
+  },
+  "plugins": [
+    {
+      "name": "motionshelf",
+      "source": "./",
+      "description": "Make MotionShelf effects from motion prompts and process the MotionShelf inbox."
+    }
+  ]
+}

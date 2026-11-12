@@ -1,0 +1,9 @@
+.build/
+build/
+.swiftpm/
+.DS_Store
+# 個人資料：收件匣、自訂分類 / personal data: inbox and custom categories
+effects/_inbox/
+effects/_categories.json
+# 你自己的 agent 設定 / your own agent setting
+agent.json

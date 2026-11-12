@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 100%; height: 100%; background: transparent; overflow: hidden; }
+  #stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  #text { font-weight: 600; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="stage"><div id="text"></div></div>
+<script>
+  const el = document.getElementById('text');
+  const params = { text: 'MotionShelf', font: 'Helvetica Neue', color: '#FFFFFF', size: 120 };
+  let current = 0;
+
+  const clamp = (v) => Math.min(1, Math.max(0, v));
+  const easeOut = (p) => 1 - Math.pow(1 - p, 3);
+
+  // 純函式：只依 t（秒）決定畫面
+  window.seek = function (t) {
+    current = t;
+    const p = easeOut(clamp(t / 0.8));
+    el.style.opacity = p;
+    el.style.transform = `translateY(${(1 - p) * 40}px)`;
+  };
+
+  window.setParams = function (next) {
+    Object.assign(params, next);
+    el.textContent = params.text;
+    el.style.fontFamily = `"${params.font}", sans-serif`;
+    el.style.color = params.color;
+    el.style.fontSize = params.size + 'px';
+    window.seek(current);
+  };
+
+  window.setParams({});
+  window.seek(1);
+</script>
+</body>
+</html>

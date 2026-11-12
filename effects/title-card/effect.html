@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 100%; height: 100%; background: transparent; overflow: hidden; }
+  #stage {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center;
+  }
+  .line { padding: 0.08em 0.15em; line-height: 1.15; white-space: pre; }
+  .inner { display: inline-block; transform-origin: 50% 50%; }
+  .ch { display: inline-block; white-space: pre; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+(() => {
+  const DURATION = 4; // 和 effect.json 的 duration 相同，結尾淡出要用
+  const stage = document.getElementById('stage');
+  const params = {
+    text: 'MotionShelf', font: 'Helvetica Neue', color: '#FFFFFF',
+    size: 140, weight: 700, style: '淡入', speed: 1, outro: '淡出'
+  };
+  let lines = [];   // [{ line, inner, chars }]
+  let current = 0;
+
+  const clamp01 = (v) => Math.min(1, Math.max(0, v));
+  const easeOutCubic = (p) => 1 - Math.pow(1 - p, 3);
+  const easeOutBack = (p) => 1 + 2.70158 * Math.pow(p - 1, 3) + 1.70158 * Math.pow(p - 1, 2);
+
+  // 每行一個 .line，每個字一個 .ch（Array.from 才不會把中文或 emoji 切壞）
+  function build() {
+    stage.innerHTML = '';
+    lines = String(params.text).split('\n').map((text) => {
+      const line = document.createElement('div');
+      line.className = 'line';
+      const inner = document.createElement('span');
+      inner.className = 'inner';
+      const chars = Array.from(text.length ? text : ' ').map((c) => {
+        const span = document.createElement('span');
+        span.className = 'ch';
+        span.textContent = c;
+        inner.appendChild(span);
+        return span;
+      });
+      line.appendChild(inner);
+      stage.appendChild(line);
+      return { line, inner, chars };
+    });
+  }
+
+  function applyStyle() {
+    stage.style.fontFamily = `"${params.font}", "PingFang TC", sans-serif`;
+    stage.style.color = params.color;
+    stage.style.fontSize = params.size + 'px';
+    stage.style.fontWeight = params.weight;
+  }
+
+  // 純函式：只依 t（秒）與參數決定畫面，不用 transition 或計時器
+  window.seek = function (t) {
+    current = t;
+    const enter = 1 / Math.max(0.1, Number(params.speed) || 1); // 進場秒數
+    const outro = params.outro === '淡出' ? 1 - clamp01((t - (DURATION - 0.5)) / 0.5) : 1;
+    const total = lines.reduce((n, l) => n + l.chars.length, 0);
+    let k = 0;
+
+    lines.forEach((l, li) => {
+      l.line.style.overflow = params.style === '由下滑入' ? 'hidden' : 'visible';
+      l.inner.style.opacity = '';
+      l.inner.style.transform = '';
+      l.chars.forEach((c) => { c.style.opacity = ''; c.style.transform = ''; });
+
+      switch (params.style) {
+        case '逐字出現': {
+          const each = enter * 0.45;
+          const gap = total > 1 ? (enter - each) / (total - 1) : 0;
+          l.chars.forEach((c) => {
+            const p = easeOutCubic(clamp01((t - k * gap) / each));
+            c.style.opacity = p;
+            c.style.transform = `translateY(${(1 - p) * 0.35}em)`;
+            k++;
+          });
+          l.inner.style.opacity = outro;
+          break;
+        }
+        case '旋轉進場': {
+          const p = clamp01((t - li * 0.12 * enter) / enter);
+          const e = easeOutBack(p);
+          l.inner.style.opacity = clamp01(p * 2) * outro;
+          l.inner.style.transform = `rotate(${(1 - e) * -90}deg) scale(${0.3 + 0.7 * e})`;
+          break;
+        }
+        case '由下滑入': {
+          const p = easeOutCubic(clamp01((t - li * 0.15 * enter) / enter));
+          l.inner.style.transform = `translateY(${(1 - p) * 110}%)`;
+          l.inner.style.opacity = outro;
+          break;
+        }
+        default: { // 淡入
+          const p = easeOutCubic(clamp01(t / enter));
+          l.inner.style.opacity = p * outro;
+          l.inner.style.transform = `scale(${0.96 + 0.04 * p})`;
+        }
+      }
+    });
+  };
+
+  window.setParams = function (next) {
+    const rebuild = lines.length === 0 || (next.text !== undefined && next.text !== params.text);
+    Object.assign(params, next);
+    if (rebuild) build();
+    applyStyle();
+    window.seek(current);
+  };
+
+  window.setParams({});
+  window.seek(2);
+})();
+</script>
+</body>
+</html>

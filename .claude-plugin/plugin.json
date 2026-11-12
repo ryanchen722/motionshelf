@@ -1,0 +1,10 @@
+{
+  "name": "motionshelf",
+  "version": "0.1.0",
+  "description": "Turn motion prompts into parameterized, transparent HTML animations for MotionShelf, the macOS app that previews them and exports ProRes 4444 for DaVinci Resolve and other editors.",
+  "author": { "name": "ryanchen722", "url": "https://github.com/ryanchen722" },
+  "homepage": "https://github.com/ryanchen722/motionshelf",
+  "repository": "https://github.com/ryanchen722/motionshelf",
+  "license": "MIT",
+  "keywords": ["motion-design", "animation", "video", "prores", "davinci-resolve"]
+}
