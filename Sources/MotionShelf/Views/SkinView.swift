@@ -123,7 +123,7 @@ struct SkinView: View {
             Text("MotionShelf").font(.system(.title2, design: .rounded).weight(.heavy))
                 .lineLimit(1)
                 .fixedSize()
-            Text(L("動態小屋", "Motion Cabin")).font(.caption.bold()).foregroundStyle(Theme.redDeep)
+            Text(L("動態小屋", "Motion House")).font(.caption.bold()).foregroundStyle(Theme.redDeep)
                 .padding(.horizontal, 9).padding(.vertical, 2)
                 .background(Theme.red.opacity(0.18), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
                 .overlay(RoundedRectangle(cornerRadius: 8, style: .continuous).strokeBorder(Theme.red.opacity(0.5), lineWidth: 1))
