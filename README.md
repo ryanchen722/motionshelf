@@ -146,6 +146,8 @@ Join the [Discord](https://discord.gg/Ms6WVturY) to share your own effects, show
 
 MotionShelf is free and open source. If it helps you, you can [buy me a coffee on Ko-fi](https://ko-fi.com/motionhouse). It is entirely optional, and thank you!
 
+In Taiwan? PayPal does not allow payments between two Taiwan accounts, so Ko-fi may not work for you. You can send a tip with [JKO Pay](https://service.jkopay.com/r/transfer?j=Transfer:901341374) instead (open the link on your phone).
+
 ## License
 
 [MIT](LICENSE)

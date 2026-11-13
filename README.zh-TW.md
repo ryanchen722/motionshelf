@@ -146,6 +146,8 @@ node tools/check-effects.mjs my-effect
 
 MotionShelf 是免費開源的。如果它對你有幫助，歡迎到 [Ko-fi 請我喝杯咖啡](https://ko-fi.com/motionhouse)。完全自由，謝謝你！
 
+住在台灣的朋友：因為 PayPal 不支援台灣帳戶之間的付款，Ko-fi 可能無法付款。你可以改用[街口支付轉帳](https://service.jkopay.com/r/transfer?j=Transfer:901341374)（請在手機上開啟連結）。
+
 ## 授權
 
 [MIT](LICENSE)
