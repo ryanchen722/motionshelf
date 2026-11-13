@@ -9,6 +9,7 @@ final class PanelState: ObservableObject {
 @MainActor
 final class FloatingPanel: NSPanel {
     let state = PanelState()
+    private let player: EffectPlayer
 
     /// 最小就是預設大小：視窗縮小時字體不會跟著縮，元件會擠在一起。螢幕高度放不下時才縮小一點。
     private static var expandedMinSize: NSSize {
@@ -26,6 +27,7 @@ final class FloatingPanel: NSPanel {
         var frame = saved ?? NSRect(x: 200, y: 200, width: 980, height: 1014)
         frame.size.width = max(frame.width, Self.expandedMinSize.width)
         frame.size.height = (frame.width * Self.skinRatio.height / Self.skinRatio.width).rounded()
+        self.player = player
         super.init(
             contentRect: frame,
             styleMask: [.titled, .resizable, .nonactivatingPanel, .fullSizeContentView],
@@ -72,6 +74,18 @@ final class FloatingPanel: NSPanel {
 
     // 讓之後的文字輸入框可以打字
     override var canBecomeKey: Bool { true }
+
+    /// 空白鍵播放／暫停。只在面板是目前的按鍵視窗（例如剛點過預覽畫面）時才會收到，
+    /// 所以平常在 DaVinci 按空白鍵不受影響；在文字輸入框裡打字時（欄位編輯器是 NSTextView）照常輸入空白。
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        let blocked: NSEvent.ModifierFlags = [.command, .option, .control, .shift]
+        if event.type == .keyDown, event.keyCode == 49, event.modifierFlags.intersection(blocked).isEmpty,
+           !(firstResponder is NSTextView) {
+            if !event.isARepeat { player.togglePlay() }
+            return true
+        }
+        return super.performKeyEquivalent(with: event)
+    }
 
     func toggleVisible() {
         if isVisible {

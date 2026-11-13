@@ -11,6 +11,7 @@ Collect motion prompts you find online, and let **Claude Code** turn them into e
 ## Features
 
 - **Floating panel**: press ⌥Space to show or hide it over any app; shrink it to a one-line toolbar.
+- **Playback**: click the preview, then press **Space** to play or pause (typing a space in a text field still works as usual).
 - **Params**: every effect exposes its own controls (text, fonts, colors, sliders, menus), and the preview updates live.
 - **Transparent export**: ProRes 4444 with alpha in 1920×1080, 1080×1920 or 1440×1440. Drag the finished clip straight from MotionShelf into your editor.
 - **Inbox**: paste a motion prompt and save it. Claude can first tell you how many separate effects the prompt contains.

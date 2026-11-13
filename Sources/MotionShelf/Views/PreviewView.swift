@@ -108,6 +108,11 @@ private final class ZoomingContainer: NSView {
 
     required init?(coder: NSCoder) { fatalError() }
 
+    // 效果畫面只負責顯示，不需要接收滑鼠。點一下預覽畫面就讓面板成為按鍵視窗，之後按空白鍵可以播放／暫停。
+    override func hitTest(_ point: NSPoint) -> NSView? { bounds.contains(convert(point, from: superview)) ? self : nil }
+    override var mouseDownCanMoveWindow: Bool { false }
+    override func mouseDown(with event: NSEvent) { window?.makeKey() }
+
     override func layout() {
         super.layout()
         webView.frame = bounds
@@ -224,6 +229,7 @@ private final class CameraDragView: NSView {
     override var acceptsFirstResponder: Bool { true }
 
     override func mouseDown(with event: NSEvent) {
+        window?.makeKey()
         if event.clickCount == 2 { Task { @MainActor in player.editCameraPose { $0 = .flat } } }
     }
 
