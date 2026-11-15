@@ -8,6 +8,16 @@
 
 ![MotionShelf](docs/screenshot-zh.png)
 
+## 快速安裝（不需要寫程式）
+
+1. 到[最新版本](https://github.com/ryanchen722/motionshelf/releases/latest)下載 `MotionShelf-x.y.z.zip`，連點兩下解壓縮。
+2. 把 **MotionShelf** 拖進「應用程式」資料夾，然後打開它。
+3. MotionShelf 不會出現在 Dock，按 **⌥Space** 叫出面板。第一次開啟會跳出設定視窗。
+
+想**用 AI 做新效果**的話，請另外安裝 [Node.js](https://nodejs.org) 22 以上和 [Google Chrome](https://www.google.com/chrome/)，它們只用來檢查 AI 做出來的效果和產生縮圖；只是用現成效果的人都不用裝。
+
+你的效果放在 `~/Library/Application Support/MotionShelf`。要用 AI 功能，請先在終端機登入 [Claude Code](https://claude.com/claude-code)（`claude auth login`）；沒登入時，App 仍然可以瀏覽、預覽和輸出效果。想自己編譯的話，見[從原始碼編譯](#從原始碼編譯)。
+
 ## 功能
 
 - **浮動面板**：按 ⌥Space 在任何 App 上叫出或隱藏，也可以縮成一條工具列。
@@ -26,11 +36,11 @@
 ## 需要的環境
 
 - macOS 14 以上
-- Xcode 或 Xcode Command Line Tools（Swift 5.10 以上）
+- Xcode 或 Xcode Command Line Tools（Swift 5.10 以上），只有從原始碼編譯才需要
 - 要用 AI 相關功能：在終端機登入 [Claude Code](https://claude.com/claude-code)（`claude auth login`），或接其他命令列 agent（見[連接你的 agent](#連接你的-agent)），會用到你自己方案的用量。沒有 agent 時，App 仍然可以瀏覽、預覽和輸出效果
 - 要驗證效果、產生縮圖：Node.js 22 以上和 Google Chrome
 
-## 安裝 App
+## 從原始碼編譯
 
 ```bash
 git clone https://github.com/ryanchen722/motionshelf.git ~/MotionShelf

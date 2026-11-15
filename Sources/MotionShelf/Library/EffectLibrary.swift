@@ -169,17 +169,62 @@ final class EffectLibrary: ObservableObject {
     }
 }
 
-/// 專案資料夾（裡面有 effects/、tools/）。
-/// ./run.sh 把 App 放在專案的 build/ 裡，所以從 App 的位置往上找有 Package.swift 的資料夾；
-/// 找不到時用環境變數 MOTIONSHELF_HOME，再不行就用 ~/MotionShelf。
+/// 專案資料夾（裡面有 effects/、tools/、skills/）。
+/// 1. 環境變數 MOTIONSHELF_HOME
+/// 2. ./run.sh 把 App 放在專案的 build/ 裡，從 App 的位置往上找有 Package.swift 的資料夾
+/// 3. 預先編譯的 .app（Resources/project 有內建檔案）：用 ~/Library/Application Support/MotionShelf，第一次開啟時把內建檔案複製過去
+/// 4. 都不是就用 ~/MotionShelf
 enum Project {
     static let folder: URL = {
+        let fm = FileManager.default
         if let home = ProcessInfo.processInfo.environment["MOTIONSHELF_HOME"] { return URL(fileURLWithPath: home) }
         var url = Bundle.main.bundleURL
         for _ in 0..<5 {
             url.deleteLastPathComponent()
-            if FileManager.default.fileExists(atPath: url.appendingPathComponent("Package.swift").path) { return url }
+            if fm.fileExists(atPath: url.appendingPathComponent("Package.swift").path) { return url }
         }
-        return FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("MotionShelf")
+        if let bundled = Bundle.main.resourceURL?.appendingPathComponent("project", isDirectory: true),
+           fm.fileExists(atPath: bundled.path),
+           let support = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first?.appendingPathComponent("MotionShelf", isDirectory: true) {
+            seed(from: bundled, to: support)
+            return support
+        }
+        return fm.homeDirectoryForCurrentUser.appendingPathComponent("MotionShelf")
     }()
+
+    /// 把 App 內建的檔案放進資料夾。skills/、tools/ 是 App 自己的，每次都換成這個版本的；
+    /// effects/ 和 agent.example.json 只在不存在時才放，不會蓋掉使用者做的效果。
+    private static func seed(from bundled: URL, to folder: URL) {
+        let fm = FileManager.default
+        try? fm.createDirectory(at: folder, withIntermediateDirectories: true)
+        func replace(_ name: String) {
+            let source = bundled.appendingPathComponent(name), target = folder.appendingPathComponent(name)
+            guard fm.fileExists(atPath: source.path) else { return }
+            try? fm.createDirectory(at: target.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try? fm.removeItem(at: target)
+            try? fm.copyItem(at: source, to: target)
+        }
+        func addMissing(_ name: String) {
+            let source = bundled.appendingPathComponent(name), target = folder.appendingPathComponent(name)
+            guard fm.fileExists(atPath: source.path), !fm.fileExists(atPath: target.path) else { return }
+            try? fm.copyItem(at: source, to: target)
+        }
+        replace("skills")
+        replace("tools")
+        addMissing("agent.example.json")
+        // effects/ 的每個範例效果分開處理：使用者刪掉或改過的不會被還原，新版新增的範例會補進去
+        let effects = folder.appendingPathComponent("effects", isDirectory: true)
+        try? fm.createDirectory(at: effects, withIntermediateDirectories: true)
+        let marker = effects.appendingPathComponent(".seeded", isDirectory: false)
+        let seeded = Set((try? String(contentsOf: marker, encoding: .utf8))?.split(separator: "\n").map(String.init) ?? [])
+        var done = seeded
+        for item in (try? fm.contentsOfDirectory(atPath: bundled.appendingPathComponent("effects").path)) ?? [] where !seeded.contains(item) {
+            let target = effects.appendingPathComponent(item)
+            if !fm.fileExists(atPath: target.path) {
+                try? fm.copyItem(at: bundled.appendingPathComponent("effects/\(item)"), to: target)
+            }
+            done.insert(item)
+        }
+        if done != seeded { try? done.sorted().joined(separator: "\n").write(to: marker, atomically: true, encoding: .utf8) }
+    }
 }

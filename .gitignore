@@ -7,3 +7,4 @@ effects/_inbox/
 effects/_categories.json
 # 你自己的 agent 設定 / your own agent setting
 agent.json
+dist/

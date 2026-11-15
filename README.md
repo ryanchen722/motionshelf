@@ -8,6 +8,16 @@ Collect motion prompts you find online, and let **Claude Code** turn them into e
 
 ![MotionShelf](docs/screenshot.png)
 
+## Quick install (no coding needed)
+
+1. Download `MotionShelf-x.y.z.zip` from the [latest release](https://github.com/ryanchen722/motionshelf/releases/latest) and double-click it to unzip.
+2. Drag **MotionShelf** into your **Applications** folder and open it.
+3. MotionShelf has no Dock icon. Press **⌥Space** to show the panel. A setup window appears on first launch.
+
+To make **new effects with AI**, also install [Node.js](https://nodejs.org) 22 or later and [Google Chrome](https://www.google.com/chrome/); they are only used to check and thumbnail the effects the AI makes. If you only use existing effects you need neither.
+
+Your effects live in `~/Library/Application Support/MotionShelf`. To use the AI features, sign in to [Claude Code](https://claude.com/claude-code) in Terminal first (`claude auth login`); without it the app still browses, previews and exports effects. Prefer to build it yourself? See [Build from source](#build-from-source).
+
 ## Features
 
 - **Floating panel**: press ⌥Space to show or hide it over any app; shrink it to a one-line toolbar.
@@ -26,11 +36,11 @@ Collect motion prompts you find online, and let **Claude Code** turn them into e
 ## Requirements
 
 - macOS 14 or later
-- Xcode or the Xcode Command Line Tools (Swift 5.10+)
+- Xcode or the Xcode Command Line Tools (Swift 5.10+), only if you build from source
 - For the AI features: [Claude Code](https://claude.com/claude-code) signed in from Terminal (`claude auth login`), or another command-line agent (see [Connect your agent](#connect-your-agent)). They use your own plan's usage. Without an agent the app still browses, previews and exports effects.
 - For checking effects and making thumbnails: Node.js 22+ and Google Chrome
 
-## Install the app
+## Build from source
 
 ```bash
 git clone https://github.com/ryanchen722/motionshelf.git ~/MotionShelf
