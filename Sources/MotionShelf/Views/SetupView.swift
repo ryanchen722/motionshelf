@@ -9,7 +9,7 @@ final class SetupWindow {
 
     static func show(firstRun: Bool) {
         if let window { window.makeKeyAndOrderFront(nil); NSApp.activate(ignoringOtherApps: true); return }
-        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 560, height: 640), styleMask: [.titled, .closable], backing: .buffered, defer: false)
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 560, height: 720), styleMask: [.titled, .closable], backing: .buffered, defer: false)
         window.title = L("MotionShelf 設定", "MotionShelf Settings")
         window.isReleasedWhenClosed = false
         window.level = .modalPanel
@@ -50,10 +50,19 @@ private enum AgentChoice: String, CaseIterable, Identifiable {
         }
     }
 
-    /// 常見的非互動寫法（Codex、Gemini 沒有實測過，請自己對照官方文件）
+    /// 官方的安裝指令（Claude：code.claude.com/docs/en/setup；Codex：learn.chatgpt.com/docs/codex/cli）
+    var installCommand: String? {
+        switch self {
+        case .claude: return InstallCommand.claude
+        case .codex: return InstallCommand.codex
+        default: return nil
+        }
+    }
+
+    /// 常見的非互動寫法（Codex 依官方文件；Gemini 沒有實測過，請自己對照官方文件）
     var presetCommand: String {
         switch self {
-        case .codex: return "codex exec --full-auto {prompt}"
+        case .codex: return Agent.codexCommand
         case .gemini: return "gemini --yolo -p {prompt}"
         default: return ""
         }
@@ -69,6 +78,8 @@ private struct SetupView: View {
     @State private var customModel: String
     @State private var command: String
     @State private var installed: Bool?
+    @State private var nodeStatus: NodeStatus?
+    @State private var chromeFound: Bool?
     @State private var effects = Settings.effectsFolder
     @State private var inbox = Settings.inboxFolder
     @State private var export = Settings.exportFolder
@@ -99,8 +110,14 @@ private struct SetupView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text(firstRun ? L("歡迎使用 MotionShelf", "Welcome to MotionShelf") : L("設定", "Settings"))
-                .font(.title2.weight(.heavy))
+            HStack {
+                Text(firstRun ? L("歡迎使用 MotionShelf", "Welcome to MotionShelf") : L("設定", "Settings"))
+                    .font(.title2.weight(.heavy))
+                Spacer()
+                Button { HelpWindow.show() } label: { Image(systemName: "questionmark.circle") }
+                    .buttonStyle(.plain).font(.title3)
+                    .help(L("說明：怎麼安裝和登入 AI", "Help: installing and signing in to an AI"))
+            }
             if firstRun {
                 Text(L("先選你要用哪一個 AI 來做效果，以及檔案要放在哪裡。這些之後都可以從齒輪按鈕改。", "Pick which AI builds your effects and where files are kept. You can change all of this later from the gear button."))
                     .foregroundStyle(.secondary)
@@ -131,7 +148,8 @@ private struct SetupView: View {
                                 .textFieldStyle(.roundedBorder)
                         }
                     }
-                    if choice == .codex || choice == .gemini || choice == .custom {
+                    // Codex 用內建的預設指令，不用自己填；Gemini 和自訂才需要
+                    if choice == .gemini || choice == .custom {
                         TextField(L("指令，用 {prompt} 代表提示詞", "Command; {prompt} stands for the prompt"), text: $command)
                             .textFieldStyle(.roundedBorder)
                             .font(.system(.body, design: .monospaced))
@@ -142,12 +160,21 @@ private struct SetupView: View {
                         Text(L("它必須能不經確認就讀寫專案資料夾裡的檔案；輸出會以純文字顯示。", "It must be able to read and write files in the project folder without asking; its output is shown as plain text."))
                             .font(.caption).foregroundStyle(.secondary)
                     }
+                    if choice == .codex {
+                        Text(L("Codex 目前只會修改檔案，不會自動檢查效果和更新縮圖；要完整流程請用 Claude Code。",
+                               "Codex only edits files for now; it doesn't check the effect or refresh its thumbnail. Use Claude Code for the full flow."))
+                            .font(.caption).foregroundStyle(.secondary)
+                    }
                     if let exe = choice.executable, let installed {
                         Label(installed ? L("在這台電腦找到 \(exe)", "Found \(exe) on this computer")
                                         : L("找不到 \(exe) 指令，請先安裝並在終端機登入", "Can't find \(exe); install it and sign in from Terminal first"),
                               systemImage: installed ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
                             .font(.caption)
                             .foregroundStyle(installed ? .green : .orange)
+                        if !installed, let command = choice.installCommand { installHelp(command, exe: exe) }
+                    }
+                    if choice != .none, let nodeStatus, let chromeFound {
+                        toolChecks(nodeStatus, chromeFound)
                     }
                     if choice == .none {
                         Text(L("沒有 AI 時仍然可以瀏覽、調參數、輸出和匯入匯出效果。", "Without an AI you can still browse, tweak, export, import and share effects."))
@@ -177,11 +204,11 @@ private struct SetupView: View {
                 if !firstRun { Button(L("取消", "Cancel"), action: onClose) }
                 Button(L("儲存", "Save"), action: save)
                     .keyboardShortcut(.defaultAction)
-                    .disabled((choice == .codex || choice == .gemini || choice == .custom) && command.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .disabled((choice == .gemini || choice == .custom) && command.trimmingCharacters(in: .whitespaces).isEmpty)
             }
         }
         .padding(24)
-        .frame(width: 560, height: 640)
+        .frame(width: 560, height: 720)
         .fontDesign(.rounded)
         .onAppear(perform: detect)
     }
@@ -191,9 +218,102 @@ private struct SetupView: View {
             || inbox.standardizedFileURL != Settings.inboxFolder.standardizedFileURL
     }
 
+    /// 找不到指令時：給官方的安裝指令，可以一鍵複製
+    private func installHelp(_ command: String, exe: String) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(L("開啟「終端機」App，貼上這行指令安裝，裝完再開一個新的終端機視窗執行 \(exe) 登入，然後按「重新檢查」：",
+                   "Open the Terminal app, paste this command to install, then open a new Terminal window, run \(exe) to sign in, and press Check again:"))
+                .font(.caption).foregroundStyle(.secondary)
+            if exe == "codex" {
+                Text(L("安裝程式問「Start Codex now?」時輸入 N（在這裡啟動會出現 stdin is not a terminal，不是安裝失敗）。",
+                       "If the installer asks \"Start Codex now?\", type N (starting it there shows \"stdin is not a terminal\"; the install itself worked)."))
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            HStack(spacing: 8) {
+                Text(command)
+                    .font(.system(.caption, design: .monospaced))
+                    .textSelection(.enabled)
+                    .padding(.horizontal, 8).padding(.vertical, 5)
+                    .background(.quaternary, in: RoundedRectangle(cornerRadius: 6))
+                Button(L("複製", "Copy")) {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(command, forType: .string)
+                }
+                .font(.caption)
+                Button(L("重新檢查", "Check again"), action: detect).font(.caption)
+            }
+        }
+    }
+
+    /// AI 做完效果後會用 Node.js 和 Chrome 驗證、產生縮圖（tools/check-effects.mjs）；沒裝只是 AI 功能不完整，不擋儲存
+    @ViewBuilder
+    private func toolChecks(_ node: NodeStatus, _ chrome: Bool) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(L("AI 做好效果後，會用 Node.js 和 Chrome 檢查並產生縮圖：", "After the AI builds an effect, Node.js and Chrome check it and make its thumbnail:"))
+                .font(.caption).foregroundStyle(.secondary)
+            toolRow(ok: node.isOK,
+                    text: node.message,
+                    linkTitle: L("下載 Node.js（選 LTS 的 .pkg）", "Get Node.js (LTS .pkg)"), url: "https://nodejs.org/")
+            toolRow(ok: chrome,
+                    text: chrome ? L("找到 Google Chrome", "Found Google Chrome")
+                                 : L("找不到 Google Chrome", "Can't find Google Chrome"),
+                    linkTitle: L("下載 Chrome", "Get Chrome"), url: "https://www.google.com/chrome/")
+            if !node.isOK || !chrome {
+                HStack(spacing: 10) {
+                    Text(L("沒裝也能瀏覽、預覽、輸出現成的效果。", "Without them you can still browse, preview and export existing effects."))
+                        .font(.caption).foregroundStyle(.secondary)
+                    Button(L("重新檢查", "Check again"), action: detect)
+                        .font(.caption)
+                }
+            }
+        }
+    }
+
+    private func toolRow(ok: Bool, text: String, linkTitle: String, url: String) -> some View {
+        HStack(spacing: 8) {
+            Label(text, systemImage: ok ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                .font(.caption)
+                .foregroundStyle(ok ? .green : .orange)
+            if !ok, let link = URL(string: url) {
+                Link(linkTitle, destination: link).font(.caption)
+            }
+        }
+    }
+
+    private func detectTools() {
+        DispatchQueue.global().async {
+            var status = NodeStatus.missing
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: "/bin/zsh")
+            process.arguments = ["-lc", "node -p process.versions.node"]
+            process.environment = ClaudeCLI.environment
+            let output = Pipe()
+            process.standardOutput = output
+            process.standardError = Pipe()
+            if (try? process.run()) != nil {
+                let data = output.fileHandleForReading.readDataToEndOfFile()
+                process.waitUntilExit()
+                if process.terminationStatus == 0 {
+                    let version = String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                    status = (Int(version.split(separator: ".").first ?? "") ?? 0) >= 22 ? .ok(version) : .old(version)
+                }
+            }
+            let fm = FileManager.default
+            let chrome = ["/Applications/Google Chrome.app", "\(ClaudeCLI.home)/Applications/Google Chrome.app"].contains { fm.fileExists(atPath: $0) }
+                || (ProcessInfo.processInfo.environment["CHROME"].map { fm.isExecutableFile(atPath: $0) } ?? false)
+            DispatchQueue.main.async {
+                nodeStatus = status
+                chromeFound = chrome
+            }
+        }
+    }
+
     private func detect() {
-        guard let exe = choice.executable else { installed = nil; return }
+        guard let exe = choice.executable else { installed = nil; nodeStatus = nil; chromeFound = nil; return }
         installed = nil
+        nodeStatus = nil
+        chromeFound = nil
+        detectTools()
         DispatchQueue.global().async {
             let process = Process()
             process.executableURL = URL(fileURLWithPath: "/bin/zsh")
@@ -217,7 +337,7 @@ private struct SetupView: View {
         case .codex, .gemini, .custom:
             config.agent = "custom"
             config.name = choice == .custom ? L("自訂 agent", "Custom agent") : choice.title
-            config.command = command.trimmingCharacters(in: .whitespaces)
+            config.command = choice == .codex ? choice.presetCommand : command.trimmingCharacters(in: .whitespaces)
         case .none:
             config.agent = "none"
         }
@@ -258,6 +378,23 @@ private struct FolderRow: View {
             }
             Button(L("預設", "Default")) { url = reset }
                 .disabled(url.standardizedFileURL == reset.standardizedFileURL)
+        }
+    }
+}
+
+/// Node.js 的偵測結果：AI 的驗證腳本需要 22 以上（內建 WebSocket）
+private enum NodeStatus {
+    case missing
+    case old(String)
+    case ok(String)
+
+    var isOK: Bool { if case .ok = self { return true } else { return false } }
+
+    var message: String {
+        switch self {
+        case .missing: return L("找不到 Node.js（需要 22 以上）", "Can't find Node.js (22 or later is needed)")
+        case .old(let version): return L("Node.js \(version) 版本太舊（需要 22 以上）", "Node.js \(version) is too old (22 or later is needed)")
+        case .ok(let version): return L("找到 Node.js \(version)", "Found Node.js \(version)")
         }
     }
 }

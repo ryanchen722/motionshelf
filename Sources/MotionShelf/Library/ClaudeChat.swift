@@ -234,7 +234,25 @@ class ClaudeChat: ObservableObject {
 /// 找到終端機版的 claude 指令，並準備 GUI App 執行它需要的環境
 enum ClaudeCLI {
     static let home = FileManager.default.homeDirectoryForCurrentUser.path
-    private static let searchPaths = ["\(home)/.local/bin", "/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin"]
+    private static var searchPaths: [String] {
+        ["\(home)/.local/bin", "/opt/homebrew/bin", "/usr/local/bin", "/usr/bin", "/bin"] + nodeManagerPaths
+    }
+
+    /// nvm、fnm、Volta 只在終端機的 ~/.zshrc 裡才把 node 加進路徑，從 Dock 開的 App 看不到，所以自己補上（版本新的排前面）
+    private static var nodeManagerPaths: [String] {
+        let fm = FileManager.default
+        func versionBins(_ root: String, suffix: String) -> [String] {
+            guard let names = try? fm.contentsOfDirectory(atPath: root) else { return [] }
+            return names.filter { $0.hasPrefix("v") }
+                .sorted { $0.compare($1, options: .numeric) == .orderedDescending }
+                .map { "\(root)/\($0)\(suffix)" }
+                .filter { fm.fileExists(atPath: $0) }
+        }
+        return versionBins("\(home)/.nvm/versions/node", suffix: "/bin")
+            + versionBins("\(home)/Library/Application Support/fnm/node-versions", suffix: "/installation/bin")
+            + versionBins("\(home)/.local/share/fnm/node-versions", suffix: "/installation/bin")
+            + ["\(home)/.volta/bin"].filter { fm.fileExists(atPath: $0) }
+    }
 
     static var url: URL? {
         searchPaths.map { URL(fileURLWithPath: $0).appendingPathComponent("claude") }

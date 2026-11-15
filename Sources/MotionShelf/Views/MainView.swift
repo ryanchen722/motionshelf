@@ -87,6 +87,8 @@ struct LanguageButton: View {
         } label: {
             Text(english ? "中文" : "EN")
                 .font(.system(size: 11, weight: .heavy, design: .rounded))
+                .lineLimit(1)
+                .fixedSize()   // 視窗縮小、工具列變窄時文字不會被壓成空白
                 .padding(.horizontal, 9)
                 .frame(height: 26)
                 .background(PlasticFill(shape: Capsule(), top: Color(rgb: 0xFFFBF2), bottom: Color(rgb: 0xDDD3B8), depth: 3))

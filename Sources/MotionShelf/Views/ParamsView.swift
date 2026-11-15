@@ -49,6 +49,8 @@ struct ParamsView: View {
 /// 3D 攝影機：開關和透視強度在這裡調；方向和位置直接在預覽畫面上拖移，記成時間軸上的關鍵幀
 private struct CameraSection: View {
     @ObservedObject var player: EffectPlayer
+    /// 強度 = depthTotal − depth：depth 0.2…4 對應強度 4…0.2
+    private static let depthTotal = 4.2
 
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {
@@ -70,10 +72,12 @@ private struct CameraSection: View {
                 row(L("透視強度", "Perspective")) {
                     HStack(spacing: 6) {
                         PlasticSlider(
-                            value: Binding(get: { player.camera.depth }, set: { new in player.updateCamera { $0.depth = (new * 10).rounded() / 10 } }),
-                            range: 0.5...4
+                            // 存的 depth 是攝影機離畫面的距離（越小越誇張）；滑桿顯示成強度，往右越強，舊設定畫面不變
+                            value: Binding(get: { Self.depthTotal - player.camera.depth },
+                                           set: { new in player.updateCamera { $0.depth = Self.depthTotal - (new * 10).rounded() / 10 } }),
+                            range: 0.2...4
                         )
-                        Text(String(format: "%.1f", player.camera.depth)).monospacedDigit().font(.caption).frame(width: 42, alignment: .trailing)
+                        Text(String(format: "%.1f", Self.depthTotal - player.camera.depth)).monospacedDigit().font(.caption).frame(width: 42, alignment: .trailing)
                     }
                 }
                 row(L("關鍵幀", "Keyframes")) {

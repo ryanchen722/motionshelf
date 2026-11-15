@@ -30,7 +30,7 @@ cp "$BIN" "$APP/Contents/MacOS/"
 cp Support/Info.plist "$APP/Contents/"
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $VERSION" "$APP/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $VERSION" "$APP/Contents/Info.plist"
-cp Support/skin.png Support/skin_back.png "$APP/Contents/Resources/"
+cp Support/skin.png Support/skin_back.png Support/AppIcon.icns "$APP/Contents/Resources/"
 
 # 第一次開啟時會複製到 ~/Library/Application Support/MotionShelf（不含收件匣、自訂分類、agent.json 等個人資料）
 P="$APP/Contents/Resources/project"

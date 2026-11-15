@@ -19,11 +19,19 @@ enum Agent {
     /// 每次都重新讀檔，改了 agent.json 不用重開 App
     static var config: AgentConfig {
         let url = Project.folder.appendingPathComponent("agent.json")
-        guard let data = try? Data(contentsOf: url), let config = try? JSONDecoder().decode(AgentConfig.self, from: data) else {
+        guard let data = try? Data(contentsOf: url), var config = try? JSONDecoder().decode(AgentConfig.self, from: data) else {
             return AgentConfig()
+        }
+        // 新版 Codex 拿掉了 --full-auto（官方文件：learn.chatgpt.com/docs/non-interactive-mode），舊設定自動換成新寫法
+        if let command = config.command, command.contains("codex exec --full-auto") {
+            config.command = command.replacingOccurrences(of: "codex exec --full-auto", with: codexCommandPrefix)
         }
         return config
     }
+
+    /// Codex 非互動指令：--sandbox workspace-write 允許在工作資料夾讀寫檔案；專案資料夾不是 git 倉庫，所以要略過檢查
+    static let codexCommandPrefix = "codex exec --sandbox workspace-write --skip-git-repo-check"
+    static let codexCommand = codexCommandPrefix + " {prompt}"
 
     static var isCustom: Bool {
         let config = config

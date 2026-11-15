@@ -6,7 +6,7 @@ enum SkinLayout {
     static let size = CGSize(width: 1423, height: 1422)
     /// 標題列是一整條面板，不挖洞：標誌和按鈕直接畫在底圖上面，左右各一塊
     static let header = CGRect(x: 14, y: 44, width: 560, height: 101)
-    static let tools = CGRect(x: 1180, y: 44, width: 230, height: 101)
+    static let tools = CGRect(x: 980, y: 44, width: 430, height: 101)
     static let sidebar = CGRect(x: 16, y: 169, width: 380, height: 1078)
     static let footer = CGRect(x: 16, y: 1254, width: 380, height: 145)
     static let params = CGRect(x: 428, y: 170, width: 977, height: 499)
@@ -132,10 +132,12 @@ struct SkinView: View {
         .padding(.horizontal, 14)
     }
 
+    /// 按鈕大小固定，所以工具列的範圍往左加寬到條紋區（SkinLayout.tools），小螢幕縮小視窗時也放得下，靠右對齊
     private var toolsContent: some View {
         HStack(spacing: 10) {
             Spacer(minLength: 0)
             LanguageButton()
+            PanelButton(symbol: "questionmark", help: L("說明（安裝與登入 AI）", "Help (installing and signing in to an AI)")) { HelpWindow.show() }
             PanelButton(symbol: "gearshape", help: L("設定（AI 與資料夾）", "Settings (AI and folders)")) { SetupWindow.show(firstRun: false) }
             PanelButton(symbol: "rectangle.compress.vertical", help: L("縮小成工具列", "Shrink to a toolbar"), action: actions.toggleMini)
             PanelButton(symbol: "xmark", help: L("隱藏（⌥Space 叫回）", "Hide (⌥Space to bring back)"), action: actions.hide)
