@@ -104,6 +104,8 @@ agent 照著做的指示是 `skills/` 裡的 Markdown，可以自己看、自己
 
 ## 分享與匯入效果
 
+**效果庫**：[下載效果庫（41 個 `.mseffect`，ZIP）](https://drive.google.com/file/d/1zPbWyGUQHMPesXxJrncsomK1s5tBS3c7/view?usp=sharing)。解壓縮後，把想要的效果拖進 MotionShelf 視窗就能匯入。其中 12 個 `ui-` 開頭的效果用到免費的 Geist 和 GeistMono 字體，請先安裝，否則會退回一般無襯線字體。
+
 - **匯出**：選一個效果，按左下角的匯出按鈕（或在效果上按右鍵）。會存成 `.mseffect`，其實就是 ZIP，裡面只有 `effect.html`、`effect.json`、`source.md`、`thumb.png`。
 - **匯入**：按匯入按鈕選檔案，或把 `.mseffect` 拖進視窗。匯入的效果和自己做的一樣，可以調參數、客製化、刪除。同名時可以選覆蓋或兩個都留。
 

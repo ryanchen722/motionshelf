@@ -104,6 +104,8 @@ The instructions the agent follows are plain Markdown in `skills/`, so you can r
 
 ## Sharing and importing effects
 
+**Effect library**: [Download the effect library (41 `.mseffect` files, ZIP)](https://drive.google.com/file/d/1zPbWyGUQHMPesXxJrncsomK1s5tBS3c7/view?usp=sharing). Unzip it and drag the files you want onto the MotionShelf window. The 12 `ui-` effects use the free Geist and GeistMono fonts; install them first, otherwise those effects fall back to a plain sans-serif font.
+
 - **Export**: select an effect and press the export button at the bottom left (or right-click the effect). It saves a `.mseffect` file, which is a ZIP containing only `effect.html`, `effect.json`, `source.md` and `thumb.png`.
 - **Import**: press the import button and pick a file, or drag a `.mseffect` onto the window. An imported effect works like one you made: adjust params, customize, delete. If the name already exists you can replace it or keep both.
 
