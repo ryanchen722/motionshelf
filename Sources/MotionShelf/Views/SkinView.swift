@@ -30,6 +30,7 @@ struct SkinView: View {
     private static let image = load("skin")
     /// 洞後面的底圖：用洞周圍的照片平滑填出來的，所以洞裡露出來的顏色和磚面一致
     private static let backing = load("skin_back")
+    private static let headerIcon = load("HeaderIcon")
 
     private static func load(_ name: String) -> NSImage? {
         guard let url = Bundle.main.url(forResource: name, withExtension: "png") else { return nil }
@@ -109,17 +110,25 @@ struct SkinView: View {
 
     private var headerContent: some View {
         HStack(spacing: 10) {
-            // 圖標放大、厚邊加深、再加一圈高光和落影，看起來是凸起的按鈕
-            ZStack {
-                PlasticFill(shape: Circle(), top: Color(rgb: 0x6FCB74), bottom: Theme.greenDeep, depth: 8)
-                    .frame(width: 50, height: 50)
-                Circle().strokeBorder(LinearGradient(colors: [.white.opacity(0.75), .clear], startPoint: .top, endPoint: .center), lineWidth: 2)
-                    .frame(width: 46, height: 46)
-                Image(systemName: "leaf.fill").font(.system(size: 24, weight: .bold)).foregroundStyle(.white)
-                    .shadow(color: .black.opacity(0.35), radius: 1, x: 0, y: 2)
+            if let icon = Self.headerIcon {
+                // App 圖示（Support/HeaderIcon.png）
+                Image(nsImage: icon).resizable().interpolation(.high)
+                    .frame(width: 58, height: 58)
+                    .shadow(color: .black.opacity(0.25), radius: 2, x: 0, y: 2)
+                    .padding(.trailing, 2)
+            } else {
+                // 沒有圖示檔時退回葉子圓鈕
+                ZStack {
+                    PlasticFill(shape: Circle(), top: Color(rgb: 0x6FCB74), bottom: Theme.greenDeep, depth: 8)
+                        .frame(width: 50, height: 50)
+                    Circle().strokeBorder(LinearGradient(colors: [.white.opacity(0.75), .clear], startPoint: .top, endPoint: .center), lineWidth: 2)
+                        .frame(width: 46, height: 46)
+                    Image(systemName: "leaf.fill").font(.system(size: 24, weight: .bold)).foregroundStyle(.white)
+                        .shadow(color: .black.opacity(0.35), radius: 1, x: 0, y: 2)
+                }
+                .frame(width: 54, height: 60)
+                .padding(.trailing, 2)
             }
-            .frame(width: 54, height: 60)
-            .padding(.trailing, 2)
             Text("MotionShelf").font(.system(.title2, design: .rounded).weight(.heavy))
                 .lineLimit(1)
                 .fixedSize()

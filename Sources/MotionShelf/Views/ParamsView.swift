@@ -12,12 +12,11 @@ struct ParamsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                BubbleTitle(text: L("參數", "Params"), symbol: "slider.horizontal.3")
+                Text(L("參數", "Params"))
+                    .font(.title3.weight(.heavy))
+                    .foregroundStyle(Theme.ink)
                 Spacer()
-                Button(L("重設為預設值", "Reset to defaults"), action: store.reset)
-                    .buttonStyle(.borderless)
-                    .font(.caption)
-                    .disabled(store.isDefault)
+                PanelButton(symbol: "arrow.counterclockwise", help: L("重設為預設值", "Reset to defaults"), action: store.reset)
                 Button {
                     customize.isOpen.toggle()
                 } label: {
