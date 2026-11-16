@@ -31,9 +31,6 @@ struct InboxView: View {
                 Field(L("來源連結", "Source link")) {
                     TextField("https://…", text: $inbox.source)
                 }
-                Field(L("我想用在", "Use it for")) {
-                    TextField(L("例如：婚禮開場人名字卡", "e.g. Name cards for a wedding intro"), text: $inbox.usage)
-                }
             }
             Field(L("要能調整的參數", "Adjustable params")) {
                 TextField(L("例如：文字、顏色、粒子數量、速度", "e.g. text, color, particle count, speed"), text: $inbox.params, axis: .vertical)

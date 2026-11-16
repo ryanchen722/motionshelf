@@ -12,7 +12,6 @@ final class Inbox: ObservableObject {
     // 表單草稿；縮成小工具列或關掉收件匣都不會清掉
     @Published var prompt = ""
     @Published var source = ""
-    @Published var usage = ""
     @Published var params = ""
 
     let folder: URL
@@ -68,7 +67,6 @@ final class Inbox: ObservableObject {
     func clear() {
         prompt = ""
         source = ""
-        usage = ""
         params = ""
         analyzer.reset()
     }
@@ -77,14 +75,14 @@ final class Inbox: ObservableObject {
         NSWorkspace.shared.activateFileViewerSelecting([folder])
     }
 
-    /// 資料夾名稱：用「我想用在」，沒填就用 prompt 的第一行
+    /// 資料夾名稱：用 prompt 的第一行
     private var displayName: String {
-        let candidates = [usage, prompt.components(separatedBy: .newlines).first ?? ""]
+        let candidates = [prompt.components(separatedBy: .newlines).first ?? ""]
         let first = candidates.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.first { !$0.isEmpty } ?? L("未命名", "untitled")
         return String(first.prefix(24))
     }
 
-    /// 和 effects/sample-text/source.md 相同的格式，多了「我想用在」與「要能調整的參數」
+    /// 和 effects/sample-text/source.md 相同的格式，多了「要能調整的參數」
     private func markdown(title: String) -> String {
         func section(_ heading: String, _ body: String) -> String {
             "## \(heading)\n\(body.trimmingCharacters(in: .whitespacesAndNewlines))\n"
@@ -93,7 +91,6 @@ final class Inbox: ObservableObject {
             "# \(title)\n",
             section(L("原始 prompt", "Original prompt"), prompt),
             section(L("來源", "Source"), source),
-            section(L("我想用在", "Use it for"), usage),
             section(L("要能調整的參數", "Adjustable params"), params),
             splitSection,
             section(L("備註", "Notes"), L("- 收件時間：\(Self.noteFormatter.string(from: Date()))", "- Received: \(Self.noteFormatter.string(from: Date()))")),
