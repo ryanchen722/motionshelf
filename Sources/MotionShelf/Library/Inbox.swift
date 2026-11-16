@@ -10,7 +10,6 @@ final class Inbox: ObservableObject {
     @Published private(set) var errorMessage: String?
 
     // 表單草稿；縮成小工具列或關掉收件匣都不會清掉
-    @Published var name = ""
     @Published var prompt = ""
     @Published var source = ""
     @Published var usage = ""
@@ -67,7 +66,6 @@ final class Inbox: ObservableObject {
     }
 
     func clear() {
-        name = ""
         prompt = ""
         source = ""
         usage = ""
@@ -79,9 +77,9 @@ final class Inbox: ObservableObject {
         NSWorkspace.shared.activateFileViewerSelecting([folder])
     }
 
-    /// 沒填名稱時，用「我想用在」或 prompt 的第一行
+    /// 資料夾名稱：用「我想用在」，沒填就用 prompt 的第一行
     private var displayName: String {
-        let candidates = [name, usage, prompt.components(separatedBy: .newlines).first ?? ""]
+        let candidates = [usage, prompt.components(separatedBy: .newlines).first ?? ""]
         let first = candidates.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }.first { !$0.isEmpty } ?? L("未命名", "untitled")
         return String(first.prefix(24))
     }

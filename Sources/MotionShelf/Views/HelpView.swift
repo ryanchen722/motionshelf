@@ -63,8 +63,8 @@ private struct HelpView: View {
                     para(L("手上有一段動態效果的 prompt，想變成可以用的效果時，用左上角紅色的「收件匣」。需要先連接 Claude Code（見上一段）。",
                            "Got a prompt for a motion effect and want a working effect? Use the red Inbox button at the top left. Connect Claude Code first (see above)."))
                     step(L("1. 按左上角的「收件匣」，貼上原始 prompt。", "1. Press Inbox at the top left and paste the original prompt."), color: Theme.redDeep)
-                    para(L("名稱、來源連結、我想用在、要能調整的參數都是選填，寫得越清楚，做出來越貼近你要的。",
-                           "Name, source link, what you'll use it for and adjustable params are optional. The clearer they are, the closer the result."))
+                    para(L("來源連結、我想用在、要能調整的參數都是選填，寫得越清楚，做出來越貼近你要的。效果的名稱由 AI 取，做好後可以在效果上按右鍵重新命名。",
+                           "Source link, what you'll use it for and adjustable params are optional. The clearer they are, the closer the result. The AI names each effect; right-click an effect to rename it."))
                     step(L("2. （選用）按「分析有幾個效果」。", "2. (Optional) Press Count the effects."), color: Theme.redDeep)
                     para(L("一段 prompt 裡可能有好幾個效果，分析後勾選要做的，每個會各自做成一個效果。",
                            "One prompt may hold several effects. After analyzing, tick the ones you want and each becomes its own effect."))

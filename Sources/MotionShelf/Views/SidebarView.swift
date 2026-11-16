@@ -11,6 +11,9 @@ struct SidebarView: View {
     /// 右鍵「刪除效果…」選到的效果，確認後才丟到垃圾桶
     @State private var trashing: Effect?
     @State private var trashError: String?
+    /// 右鍵「重新命名…」選到的效果和輸入中的新名稱
+    @State private var renaming: Effect?
+    @State private var renameText = ""
 
     enum Filter: Hashable {
         case all
@@ -106,6 +109,15 @@ struct SidebarView: View {
         } message: { _ in
             Text(L("整個效果資料夾會移到垃圾桶，需要時可以從垃圾桶還原。", "The whole effect folder goes to the Trash. You can put it back from there."))
         }
+        .alert(L("重新命名效果", "Rename Effect"), isPresented: Binding(get: { renaming != nil }, set: { if !$0 { renaming = nil } })) {
+            TextField(L("名稱", "Name"), text: $renameText)
+            Button(L("取消", "Cancel"), role: .cancel) {}
+            Button(L("重新命名", "Rename")) {
+                if let effect = renaming { library.rename(effect, to: renameText) }
+            }
+        } message: {
+            Text(L("名稱和別的效果重複時，會自動加上 -1。", "If the name is already taken, -1 is added automatically."))
+        }
         .alert(L("沒有刪除", "Not deleted"), isPresented: Binding(get: { trashError != nil }, set: { if !$0 { trashError = nil } })) {
             Button(L("好", "OK")) {}
         } message: {
@@ -135,6 +147,10 @@ struct SidebarView: View {
                 movingEffect = effect
                 showNewCategory = true
             }
+        }
+        Button(L("重新命名…", "Rename…")) {
+            renameText = effect.name
+            renaming = effect
         }
         Button(L("匯出效果…", "Export Effect…")) { EffectTransfer.export(effect) }
         Button(library.isFavorite(effect) ? L("取消收藏", "Remove from Favorites") : L("加入收藏", "Add to Favorites")) { library.toggleFavorite(effect) }

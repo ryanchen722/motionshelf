@@ -309,21 +309,24 @@ enum EffectTransfer {
             guard confirm(L("匯入有風險的效果嗎？", "Import this risky effect?"), message, ok: L("仍要匯入", "Import anyway"), cancel: L("取消", "Cancel")) else { return }
         }
 
+        // 顯示名稱和已有的效果重複時自動加 -1、-2…，資料夾名稱也一樣，不再詢問覆蓋
+        let manifestURL = temp.appendingPathComponent("effect.json")
+        if let data = try? Data(contentsOf: manifestURL), let manifest = try? JSONDecoder().decode(EffectManifest.self, from: data) {
+            let name = library.uniqueName(manifest.name)
+            if name != manifest.name { _ = EffectLibrary.setJSONString("name", to: name, in: manifestURL) }
+            if let english = manifest.name_en {
+                let unique = library.uniqueName(english)
+                if unique != english { _ = EffectLibrary.setJSONString("name_en", to: unique, in: manifestURL) }
+            }
+        }
+
         let base = slug(archive.deletingPathExtension().lastPathComponent)
         var id = base
         let destination = { library.folder.appendingPathComponent($0, isDirectory: true) }
-        if FileManager.default.fileExists(atPath: destination(id).path) {
-            switch conflict(id) {
-            case .cancel: return
-            case .replace:
-                do { try FileManager.default.trashItem(at: destination(id), resultingItemURL: nil) } catch {
-                    return alert(L("無法覆蓋", "Can't replace"), error.localizedDescription, style: .warning)
-                }
-            case .keepBoth:
-                var n = 2
-                while FileManager.default.fileExists(atPath: destination("\(base)-\(n)").path) { n += 1 }
-                id = "\(base)-\(n)"
-            }
+        var n = 1
+        while FileManager.default.fileExists(atPath: destination(id).path) {
+            id = "\(base)-\(n)"
+            n += 1
         }
 
         // 在 source.md 記下來源，之後分得出哪些是別人的
@@ -347,22 +350,6 @@ enum EffectTransfer {
         let cleaned = name.lowercased().map { $0.isASCII && ($0.isLetter || $0.isNumber) ? $0 : "-" }
         let text = String(cleaned).split(separator: "-", omittingEmptySubsequences: true).joined(separator: "-")
         return text.isEmpty ? "imported" : String(text.prefix(60))
-    }
-
-    private enum Conflict { case replace, keepBoth, cancel }
-
-    private static func conflict(_ id: String) -> Conflict {
-        let alert = NSAlert()
-        alert.messageText = L("已經有同名的效果「\(id)」", "An effect named \"\(id)\" already exists")
-        alert.informativeText = L("要怎麼處理？覆蓋的舊效果會移到垃圾桶。", "What should happen? A replaced effect goes to the Trash.")
-        alert.addButton(withTitle: L("兩個都留（另存新名）", "Keep both"))
-        alert.addButton(withTitle: L("覆蓋舊的", "Replace"))
-        alert.addButton(withTitle: L("取消", "Cancel"))
-        switch alert.runModal() {
-        case .alertFirstButtonReturn: return .keepBoth
-        case .alertSecondButtonReturn: return .replace
-        default: return .cancel
-        }
     }
 
     private static func confirm(_ title: String, _ message: String, ok: String, cancel: String) -> Bool {

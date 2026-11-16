@@ -18,9 +18,6 @@ struct InboxView: View {
                 PanelButton(symbol: "xmark", help: L("關閉收件匣", "Close the inbox")) { inbox.isOpen = false }
             }
 
-            Field(L("名稱（選填）", "Name (optional)")) {
-                TextField(L("例如：婚禮人名字卡", "e.g. Wedding name card"), text: $inbox.name)
-            }
             Field(L("原始 prompt", "Original prompt")) {
                 TextEditor(text: $inbox.prompt)
                     .font(.body)

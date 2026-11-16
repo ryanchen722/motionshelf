@@ -158,6 +158,37 @@ final class EffectLibrary: ObservableObject {
         reload()
     }
 
+    /// 名稱和別的效果重複（不分大小寫）時加上 -1、-2…；excluding 是自己的資料夾，不跟自己比
+    func uniqueName(_ name: String, excluding id: String? = nil) -> String {
+        let taken = Set(effects.filter { $0.id != id }.flatMap { [$0.manifest.name, $0.manifest.name_en].compactMap { $0 } }.map { $0.lowercased() })
+        guard taken.contains(name.lowercased()) else { return name }
+        var n = 1
+        while taken.contains("\(name)-\(n)".lowercased()) { n += 1 }
+        return "\(name)-\(n)"
+    }
+
+    /// 重新命名：只改 effect.json 的顯示名稱，資料夾不動（收藏、選取都是用資料夾認的）。
+    /// 英文介面且有 name_en 時改英文名稱，其他情況改 name。
+    func rename(_ effect: Effect, to newName: String) {
+        let trimmed = newName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        let key = Lang.isEnglish && effect.manifest.name_en != nil ? "name_en" : "name"
+        let final = uniqueName(trimmed, excluding: effect.id)
+        guard final != (key == "name_en" ? effect.manifest.name_en : effect.manifest.name),
+              Self.setJSONString(key, to: final, in: effect.folder.appendingPathComponent("effect.json")) else { return }
+        reload()
+    }
+
+    /// 把 effect.json 最上層第一個 "key": "…" 換成新字串，其他內容和排版不動
+    static func setJSONString(_ key: String, to value: String, in url: URL) -> Bool {
+        guard var text = try? String(contentsOf: url, encoding: .utf8),
+              let range = text.range(of: "\"\(key)\"\\s*:\\s*\"(?:[^\"\\\\]|\\\\.)*\"", options: .regularExpression),
+              let encoded = try? JSONEncoder().encode(value),
+              let json = String(data: encoded, encoding: .utf8) else { return false }
+        text.replaceSubrange(range, with: "\"\(key)\": \(json)")
+        return (try? text.write(to: url, atomically: true, encoding: .utf8)) != nil
+    }
+
     private func saveCategories() {
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .withoutEscapingSlashes]
