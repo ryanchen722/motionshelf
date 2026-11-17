@@ -1,0 +1,123 @@
+{
+  "name": "3D 翻轉卡片",
+  "name_en": "3D flip card",
+  "category": "3D",
+  "duration": 4,
+  "fps": 30,
+  "params": [
+    {
+      "key": "front",
+      "type": "text",
+      "label": "正面文字",
+      "label_en": "Front text",
+      "default": "FRONT"
+    },
+    {
+      "key": "back",
+      "type": "text",
+      "label": "背面文字",
+      "label_en": "Back text",
+      "default": "BACK"
+    },
+    {
+      "key": "font",
+      "type": "font",
+      "label": "字體",
+      "label_en": "Font",
+      "default": "Helvetica Neue"
+    },
+    {
+      "key": "cardColor",
+      "type": "color",
+      "label": "正面底色",
+      "label_en": "Front color",
+      "default": "#FF5A36"
+    },
+    {
+      "key": "backColor",
+      "type": "color",
+      "label": "背面底色",
+      "label_en": "Back color",
+      "default": "#1F2A44"
+    },
+    {
+      "key": "textColor",
+      "type": "color",
+      "label": "文字顏色",
+      "label_en": "Text color",
+      "default": "#FFFFFF"
+    },
+    {
+      "key": "size",
+      "type": "number",
+      "label": "字級",
+      "label_en": "Size",
+      "default": 200,
+      "min": 60,
+      "max": 360,
+      "step": 1
+    },
+    {
+      "key": "axis",
+      "type": "select",
+      "label": "翻轉方向",
+      "label_en": "Flip axis",
+      "default": "左右",
+      "options": [
+        "左右",
+        "上下"
+      ],
+      "options_en": [
+        "Left-right",
+        "Up-down"
+      ]
+    },
+    {
+      "key": "flips",
+      "type": "number",
+      "label": "翻幾次",
+      "label_en": "Flips",
+      "default": 1,
+      "min": 1,
+      "max": 4,
+      "step": 1
+    },
+    {
+      "key": "delay",
+      "type": "number",
+      "label": "開始時間",
+      "label_en": "Start time",
+      "default": 0.5,
+      "min": 0,
+      "max": 2,
+      "step": 0.1
+    },
+    {
+      "key": "turn",
+      "type": "number",
+      "label": "翻轉時間",
+      "label_en": "Turn time",
+      "default": 2,
+      "min": 0.4,
+      "max": 3.5,
+      "step": 0.1
+    },
+    {
+      "key": "persp",
+      "type": "number",
+      "label": "透視強度",
+      "label_en": "Perspective",
+      "default": 1,
+      "min": 0.4,
+      "max": 2.5,
+      "step": 0.1
+    }
+  ],
+  "check": {
+    "time": 1.4,
+    "params": {
+      "front": "HELLO",
+      "cardColor": "#3D5AFE"
+    }
+  }
+}

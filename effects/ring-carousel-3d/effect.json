@@ -1,0 +1,101 @@
+{
+  "name": "3D 旋轉卡片環",
+  "name_en": "3D card ring",
+  "category": "3D",
+  "duration": 6,
+  "fps": 30,
+  "params": [
+    {
+      "key": "text",
+      "type": "text",
+      "label": "文字（一行一張）",
+      "label_en": "Text (one card per line)",
+      "default": "MOTION\nSHELF\nTITLE\nVIDEO\nSTUDIO\nDEMO"
+    },
+    {
+      "key": "font",
+      "type": "font",
+      "label": "字體",
+      "label_en": "Font",
+      "default": "Helvetica Neue"
+    },
+    {
+      "key": "cardColor",
+      "type": "color",
+      "label": "卡片底色",
+      "label_en": "Card color",
+      "default": "#FFFFFF"
+    },
+    {
+      "key": "textColor",
+      "type": "color",
+      "label": "文字顏色",
+      "label_en": "Text color",
+      "default": "#1F2A44"
+    },
+    {
+      "key": "accent",
+      "type": "color",
+      "label": "強調色",
+      "label_en": "Accent color",
+      "default": "#FF5A36"
+    },
+    {
+      "key": "size",
+      "type": "number",
+      "label": "字級",
+      "label_en": "Size",
+      "default": 90,
+      "min": 30,
+      "max": 160,
+      "step": 1
+    },
+    {
+      "key": "radius",
+      "type": "number",
+      "label": "環半徑",
+      "label_en": "Radius",
+      "default": 620,
+      "min": 300,
+      "max": 900,
+      "step": 10
+    },
+    {
+      "key": "tilt",
+      "type": "number",
+      "label": "傾斜角度",
+      "label_en": "Tilt",
+      "default": 12,
+      "min": -40,
+      "max": 40,
+      "step": 1
+    },
+    {
+      "key": "turns",
+      "type": "number",
+      "label": "總共轉幾圈",
+      "label_en": "Turns",
+      "default": 1,
+      "min": 0.25,
+      "max": 3,
+      "step": 0.25
+    },
+    {
+      "key": "persp",
+      "type": "number",
+      "label": "透視強度",
+      "label_en": "Perspective",
+      "default": 1,
+      "min": 0.4,
+      "max": 2.5,
+      "step": 0.1
+    }
+  ],
+  "check": {
+    "time": 2.5,
+    "params": {
+      "text": "A\nB\nC\nD",
+      "accent": "#3D5AFE"
+    }
+  }
+}

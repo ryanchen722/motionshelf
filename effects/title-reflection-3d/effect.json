@@ -1,0 +1,127 @@
+{
+  "name": "3D 倒影字",
+  "name_en": "3D reflected title",
+  "category": "3D",
+  "duration": 4,
+  "fps": 30,
+  "params": [
+    {
+      "key": "text",
+      "type": "text",
+      "label": "文字",
+      "label_en": "Text",
+      "default": "MotionShelf"
+    },
+    {
+      "key": "font",
+      "type": "font",
+      "label": "字體",
+      "label_en": "Font",
+      "default": "Helvetica Neue"
+    },
+    {
+      "key": "color",
+      "type": "color",
+      "label": "文字顏色",
+      "label_en": "Text color",
+      "default": "#FFFFFF"
+    },
+    {
+      "key": "size",
+      "type": "number",
+      "label": "字級",
+      "label_en": "Size",
+      "default": 240,
+      "min": 60,
+      "max": 400,
+      "step": 1
+    },
+    {
+      "key": "weight",
+      "type": "number",
+      "label": "粗細",
+      "label_en": "Weight",
+      "default": 800,
+      "min": 100,
+      "max": 900,
+      "step": 100
+    },
+    {
+      "key": "reflect",
+      "type": "number",
+      "label": "倒影強度",
+      "label_en": "Reflection",
+      "default": 0.45,
+      "min": 0,
+      "max": 1,
+      "step": 0.05
+    },
+    {
+      "key": "gap",
+      "type": "number",
+      "label": "和倒影的距離",
+      "label_en": "Gap",
+      "default": 10,
+      "min": 0,
+      "max": 120,
+      "step": 1
+    },
+    {
+      "key": "startAngle",
+      "type": "number",
+      "label": "起始角度",
+      "label_en": "Start angle",
+      "default": -60,
+      "min": -90,
+      "max": 90,
+      "step": 1
+    },
+    {
+      "key": "endAngle",
+      "type": "number",
+      "label": "結束角度",
+      "label_en": "End angle",
+      "default": 12,
+      "min": -90,
+      "max": 90,
+      "step": 1
+    },
+    {
+      "key": "delay",
+      "type": "number",
+      "label": "開始時間",
+      "label_en": "Start time",
+      "default": 0.2,
+      "min": 0,
+      "max": 2,
+      "step": 0.1
+    },
+    {
+      "key": "turn",
+      "type": "number",
+      "label": "轉動時間",
+      "label_en": "Turn time",
+      "default": 2.2,
+      "min": 0.3,
+      "max": 3.5,
+      "step": 0.1
+    },
+    {
+      "key": "persp",
+      "type": "number",
+      "label": "透視強度",
+      "label_en": "Perspective",
+      "default": 1,
+      "min": 0.4,
+      "max": 2.5,
+      "step": 0.1
+    }
+  ],
+  "check": {
+    "time": 2,
+    "params": {
+      "text": "Hello",
+      "color": "#FFD23F"
+    }
+  }
+}

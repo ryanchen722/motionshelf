@@ -27,7 +27,11 @@ effects/<name>/
 
 For a real 3D camera (an effect that starts flat and then turns, tilts, orbits or dollies) use Three.js. Plain CSS 3D (`perspective` + `rotateX/rotateY`) is enough for flipping a single flat card; use Three.js when there are several objects, depth or an orbiting camera.
 
-MotionShelf is offline, so Three.js must be **inlined** into `effect.html`: copy [vendor/three.min.js](vendor/three.min.js) (Three.js r160, MIT) into a first `<script>` block, e.g. `cat head.html vendor/three.min.js tail.html > effects/<name>/effect.html`, and write your own code in a second `<script>` block. Never use `<script src>`. The file grows by about 650 KB, which is fine. Don't edit the vendored file.
+Put 3D effects in the `3D` category. Start from [templates/three-base.html](templates/three-base.html): copy it to `effects/<name>/effect.html` and fill in `build()` and the render function. Working examples are `effects/title-3d`, `flip-card-3d`, `ring-carousel-3d`, `cube-3d`, `particle-sphere-3d`, `card-fan-3d` and `title-reflection-3d`.
+
+MotionShelf is offline, so Three.js must be **inlined**. The template's first `<script>` block holds only the marker `/*THREE_MIN_JS*/`; after writing the effect run `node tools/inline-three.mjs effects/<name>/effect.html` to replace it with [vendor/three.min.js](vendor/three.min.js) (Three.js r160, MIT). Never use `<script src>`. The file grows by about 650 KB, which is fine. Don't edit the vendored file.
+
+Don't give the WebGL canvas the id `c`: `tools/check-effects.mjs` treats `#c` as a 2D canvas.
 
 Rules that make it export correctly:
 
@@ -35,6 +39,9 @@ Rules that make it export correctly:
 - Drive everything from `t`: in `seek(t)` set the camera position and rotation (and any object transforms) from `t` and the params, then call `renderer.render(scene, camera)` once. No `requestAnimationFrame` loop, no `THREE.Clock`, no OrbitControls, no tweens or state from the previous frame.
 - Size the renderer to the window in every `seek` (`renderer.setPixelRatio(1)`, `renderer.setSize(innerWidth, innerHeight)`, update `camera.aspect` and call `camera.updateProjectionMatrix()`), so the export resolution and aspect are right.
 - Text and colors: draw text onto a 2D `<canvas>` and use it as a `THREE.CanvasTexture`; set `texture.colorSpace = THREE.SRGBColorSpace`, otherwise colors come out washed out. Use `MeshBasicMaterial` for flat, exact colors; use lit materials only with lights you add yourself. Use `transparent: true` for textures with transparent areas. Don't load images or fonts from files or URLs.
+- Keep the template's renderer settings (`premultipliedAlpha: true`, `premultiplyAlpha = true` on textures and `premultipliedAlpha: true` on materials). Without them the semi-transparent edges come out with a dark or light fringe in the editor.
+- Frame the scene with the template's `frame()`: the 1920×1080 design area always fits, in 1920×1080, 1080×1920 and 1440×1440, and `persp` changes only the strength of the perspective.
+- Fake thickness with stacked planes (see `title-3d`; use 60+ layers, fewer shows stripes at 4K). Use `THREE.DoubleSide` for cards that can turn their back to the camera. Random positions need a seeded generator (the template effects use `rng(seed)`), never `Math.random()`.
 - Camera params to expose (adapt to the effect): a 3D camera on/off select, start angle and end angle (degrees; 0 = flat, front-on), the turn axis (left-right, up-down), the camera distance or field of view, and when the turn starts and how long it lasts. Keep the start frame identical to the flat version when the angle is 0.
 - When `t` is 0 the frame must already be a valid image, and the last frame must hold still.
 - After the check script, look at frames at the start, middle and end with extreme angles: make sure nothing is cut off at the frame edge while rotated.
@@ -60,7 +67,7 @@ Rules that make it export correctly:
 ```
 
 - `name`: shown in the effect list. `name_en` (optional) is shown instead when the app is in English.
-- `category`: one of `Titles`, `Transitions`, `Particles`, `Collage`, `Split screen`, `UI` (the Chinese names 字卡, 轉場, 粒子, 拼貼, 分割 also work), or a custom category listed in `effects/_categories.json`.
+- `category`: one of `Titles`, `Transitions`, `Particles`, `Collage`, `Split screen`, `UI`, `3D` (the Chinese names 字卡, 轉場, 粒子, 拼貼, 分割 also work), or a custom category listed in `effects/_categories.json`.
 - `duration` in seconds, `fps` is 30.
 - `params`: each has `key`, `type`, `label` and `default`. `type` is one of:
   - `text`: a text field (can be multi-line).

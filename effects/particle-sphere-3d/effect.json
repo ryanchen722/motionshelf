@@ -1,0 +1,99 @@
+{
+  "name": "3D 粒子球",
+  "name_en": "3D particle sphere",
+  "category": "3D",
+  "duration": 5,
+  "fps": 30,
+  "params": [
+    {
+      "key": "color",
+      "type": "color",
+      "label": "顏色一",
+      "label_en": "Color 1",
+      "default": "#FF5A36"
+    },
+    {
+      "key": "color2",
+      "type": "color",
+      "label": "顏色二",
+      "label_en": "Color 2",
+      "default": "#4DA3FF"
+    },
+    {
+      "key": "count",
+      "type": "number",
+      "label": "粒子數量",
+      "label_en": "Particle count",
+      "default": 3000,
+      "min": 200,
+      "max": 8000,
+      "step": 100
+    },
+    {
+      "key": "dot",
+      "type": "number",
+      "label": "粒子大小",
+      "label_en": "Dot size",
+      "default": 6,
+      "min": 2,
+      "max": 30,
+      "step": 1
+    },
+    {
+      "key": "radius",
+      "type": "number",
+      "label": "球半徑",
+      "label_en": "Radius",
+      "default": 380,
+      "min": 150,
+      "max": 600,
+      "step": 10
+    },
+    {
+      "key": "spin",
+      "type": "number",
+      "label": "自轉圈數",
+      "label_en": "Spin turns",
+      "default": 1,
+      "min": 0,
+      "max": 4,
+      "step": 0.25
+    },
+    {
+      "key": "scatter",
+      "type": "number",
+      "label": "散開範圍",
+      "label_en": "Scatter",
+      "default": 1400,
+      "min": 400,
+      "max": 3000,
+      "step": 50
+    },
+    {
+      "key": "form",
+      "type": "number",
+      "label": "聚成球的時間",
+      "label_en": "Form time",
+      "default": 2.5,
+      "min": 0.5,
+      "max": 4,
+      "step": 0.1
+    },
+    {
+      "key": "persp",
+      "type": "number",
+      "label": "透視強度",
+      "label_en": "Perspective",
+      "default": 1,
+      "min": 0.4,
+      "max": 2.5,
+      "step": 0.1
+    }
+  ],
+  "check": {
+    "time": 2.5,
+    "params": {
+      "color": "#FFD23F"
+    }
+  }
+}

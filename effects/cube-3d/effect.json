@@ -1,0 +1,110 @@
+{
+  "name": "3D 翻轉立方體",
+  "name_en": "3D tumbling cube",
+  "category": "3D",
+  "duration": 5,
+  "fps": 30,
+  "params": [
+    {
+      "key": "text",
+      "type": "text",
+      "label": "六面文字（一行一面）",
+      "label_en": "Face text (one per line)",
+      "default": "M\nO\nT\nI\nO\nN"
+    },
+    {
+      "key": "font",
+      "type": "font",
+      "label": "字體",
+      "label_en": "Font",
+      "default": "Helvetica Neue"
+    },
+    {
+      "key": "color1",
+      "type": "color",
+      "label": "顏色一",
+      "label_en": "Color 1",
+      "default": "#FF5A36"
+    },
+    {
+      "key": "color2",
+      "type": "color",
+      "label": "顏色二",
+      "label_en": "Color 2",
+      "default": "#1F2A44"
+    },
+    {
+      "key": "textColor",
+      "type": "color",
+      "label": "文字顏色",
+      "label_en": "Text color",
+      "default": "#FFFFFF"
+    },
+    {
+      "key": "size",
+      "type": "number",
+      "label": "方塊大小",
+      "label_en": "Cube size",
+      "default": 520,
+      "min": 200,
+      "max": 800,
+      "step": 10
+    },
+    {
+      "key": "spinX",
+      "type": "number",
+      "label": "上下翻幾圈",
+      "label_en": "Spins up-down",
+      "default": 1,
+      "min": 0,
+      "max": 3,
+      "step": 0.25
+    },
+    {
+      "key": "spinY",
+      "type": "number",
+      "label": "左右轉幾圈",
+      "label_en": "Spins left-right",
+      "default": 1,
+      "min": 0,
+      "max": 3,
+      "step": 0.25
+    },
+    {
+      "key": "delay",
+      "type": "number",
+      "label": "開始時間",
+      "label_en": "Start time",
+      "default": 0.3,
+      "min": 0,
+      "max": 2,
+      "step": 0.1
+    },
+    {
+      "key": "turn",
+      "type": "number",
+      "label": "轉動時間",
+      "label_en": "Turn time",
+      "default": 3.5,
+      "min": 0.5,
+      "max": 4.5,
+      "step": 0.1
+    },
+    {
+      "key": "persp",
+      "type": "number",
+      "label": "透視強度",
+      "label_en": "Perspective",
+      "default": 1,
+      "min": 0.4,
+      "max": 2.5,
+      "step": 0.1
+    }
+  ],
+  "check": {
+    "time": 1.8,
+    "params": {
+      "color1": "#3D5AFE"
+    }
+  }
+}

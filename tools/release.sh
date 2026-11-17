@@ -40,7 +40,7 @@ for dir in effects/*/; do
   cp -R "$dir" "$P/effects/$name"
 done
 cp -R skills "$P/skills"
-cp tools/check-effects.mjs "$P/tools/"
+cp tools/check-effects.mjs tools/inline-three.mjs "$P/tools/"
 cp agent.example.json "$P/"
 
 echo "==> 簽章（$IDENTITY）"

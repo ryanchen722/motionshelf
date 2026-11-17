@@ -14,8 +14,8 @@ struct Effect: Identifiable {
     var htmlURL: URL { folder.appendingPathComponent("effect.html") }
 
     /// 內建分類。effect.json 裡寫中文或英文都可以，內部一律用中文當代號
-    static let categories = ["字卡", "轉場", "粒子", "拼貼", "分割", "UI"]
-    private static let english = ["字卡": "Titles", "轉場": "Transitions", "粒子": "Particles", "拼貼": "Collage", "分割": "Split screen", "UI": "UI"]
+    static let categories = ["字卡", "轉場", "粒子", "拼貼", "分割", "UI", "3D"]
+    private static let english = ["字卡": "Titles", "轉場": "Transitions", "粒子": "Particles", "拼貼": "Collage", "分割": "Split screen", "UI": "UI", "3D": "3D"]
 
     static func canonical(_ category: String) -> String {
         english.first { $0.value.caseInsensitiveCompare(category) == .orderedSame }?.key ?? category

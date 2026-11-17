@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; width: 100%; height: 100%; background: transparent; overflow: hidden; }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<!-- 第一段 script 只放這個標記；做完後執行 node tools/inline-three.mjs effects/<name>/effect.html 會換成 Three.js -->
+<script>/*THREE_MIN_JS*/</script>
+<script>
+(() => {
+  // ===== 3D 效果範本：所有畫面都由 seek(t) 和參數決定，不用動畫迴圈、Clock、OrbitControls =====
+  const W = 1920, H = 1080;               // 設計尺寸：世界座標 1 單位 = 1920×1080 畫面的 1 像素
+  const params = { text: 'MotionShelf', color: '#FFFFFF' /* …其他參數的預設值，鍵和 effect.json 相同 */ };
+  let current = 0;
+
+  // 透明背景；premultipliedAlpha 讓半透明邊緣在剪輯軟體裡不會有黑邊或白邊
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, preserveDrawingBuffer: true, premultipliedAlpha: true });
+  renderer.setClearColor(0x000000, 0);
+  renderer.setPixelRatio(1);
+  document.body.appendChild(renderer.domElement);
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(30, 1, 1, 100000);
+
+  // 文字、圖形先畫在 2D canvas，再當貼圖。一定要設 sRGB，顏色才不會發灰
+  function makeTexture(draw) {
+    const c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    draw(c.getContext('2d'), W, H);
+    const tex = new THREE.CanvasTexture(c);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.premultiplyAlpha = true;
+    tex.anisotropy = 8;
+    return tex;
+  }
+  // 平面材質：premultipliedAlpha: true 才和上面的渲染器設定一致
+  function makeMaterial(tex) {
+    return new THREE.MeshBasicMaterial({ map: tex, transparent: true, premultipliedAlpha: true, depthWrite: false });
+  }
+
+  function build() {
+    // 依 params 重建物件（只在文字、字體、顏色這類會改變貼圖的參數變動時才需要）
+  }
+
+  // 每一格都重設尺寸，匯出解析度（1920×1080、1080×1920、1440×1440）才會對
+  // 取景：不管長寬比，1920×1080 的設計範圍都完整放得進畫面；persp 越大透視越明顯
+  function frame(persp) {
+    const w = innerWidth, h = innerHeight;
+    renderer.setSize(w, h, false);
+    renderer.domElement.style.width = w + 'px';
+    renderer.domElement.style.height = h + 'px';
+    const s = Math.min(w / W, h / H);      // 設計範圍放大或縮小多少才塞得進視窗
+    const visibleH = h / s;                // 世界單位的可見高度
+    const dist = 2000 * persp;
+    camera.aspect = w / h;
+    camera.fov = 2 * Math.atan(visibleH / 2 / dist) * 180 / Math.PI;
+    camera.position.set(0, 0, dist);
+    camera.lookAt(0, 0, 0);
+    camera.updateProjectionMatrix();
+  }
+
+  const clamp01 = (v) => Math.min(1, Math.max(0, v));
+  const easeInOut = (p) => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+
+  function render() {
+    frame(1);
+    // 在這裡用 current（秒）和 params 設定物件位置、旋轉、透明度
+    renderer.render(scene, camera);
+  }
+
+  window.setParams = (p) => { Object.assign(params, p || {}); build(); render(); };
+  window.seek = (t) => { current = t; render(); };
+  build();
+  window.setParams({});
+  window.seek(0);
+})();
+</script>
+</body>
+</html>
