@@ -1,0 +1,21 @@
+{
+  "name": "流體粒子",
+  "name_en": "Fluid particles",
+  "category": "3D",
+  "duration": 6,
+  "fps": 30,
+  "params": [
+    { "key": "color", "type": "color", "label": "顏色一", "label_en": "Color 1", "default": "#FF5A36" },
+    { "key": "color2", "type": "color", "label": "顏色二", "label_en": "Color 2", "default": "#4DA3FF" },
+    { "key": "count", "type": "number", "label": "粒子數量", "label_en": "Particle count", "default": 20000, "min": 1000, "max": 300000, "step": 1000 },
+    { "key": "dot", "type": "number", "label": "粒子大小", "label_en": "Dot size", "default": 4, "min": 1, "max": 20, "step": 0.5 },
+    { "key": "flow", "type": "number", "label": "流動強度", "label_en": "Flow strength", "default": 1.2, "min": 0, "max": 2, "step": 0.05 },
+    { "key": "swirl", "type": "number", "label": "漩渦大小", "label_en": "Swirl size", "default": 0.9, "min": 0.3, "max": 2, "step": 0.05 },
+    { "key": "speed", "type": "number", "label": "流速", "label_en": "Speed", "default": 1, "min": 0, "max": 2, "step": 0.05 },
+    { "key": "shape", "type": "select", "label": "起始形狀", "label_en": "Start shape", "default": "球體", "options": ["球體", "圓盤", "橫條"], "options_en": ["Sphere", "Disc", "Bar"] },
+    { "key": "seed", "type": "number", "label": "亂數種子", "label_en": "Random seed", "default": 7, "min": 1, "max": 99, "step": 1 },
+    { "key": "fade", "type": "number", "label": "結尾淡出秒數", "label_en": "Fade-out seconds", "default": 0.5, "min": 0, "max": 2, "step": 0.1 },
+    { "key": "persp", "type": "number", "label": "透視", "label_en": "Perspective", "default": 1, "min": 0.5, "max": 3, "step": 0.1 }
+  ],
+  "check": { "time": 3, "params": { "color": "#FFD23F", "flow": 2, "shape": "圓盤" } }
+}
