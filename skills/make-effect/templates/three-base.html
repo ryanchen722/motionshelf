@@ -20,7 +20,7 @@
   // 透明背景；premultipliedAlpha 讓半透明邊緣在剪輯軟體裡不會有黑邊或白邊
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, preserveDrawingBuffer: true, premultipliedAlpha: true });
   renderer.setClearColor(0x000000, 0);
-  renderer.setPixelRatio(1);
+  renderer.setPixelRatio(window.devicePixelRatio || 1);
   document.body.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(30, 1, 1, 100000);

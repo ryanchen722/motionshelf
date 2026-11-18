@@ -7,6 +7,7 @@ enum Resolution: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// 效果排版用的 CSS 尺寸（效果都照這個尺寸設計，預覽也是）
     var size: CGSize {
         switch self {
         case .landscape: CGSize(width: 1920, height: 1080)
@@ -15,10 +16,19 @@ enum Resolution: String, CaseIterable, Identifiable {
         }
     }
 
+    /// 實際輸出的影片尺寸：橫式和直式是 4K，用頁面縮放 2 倍畫出來，排版和 CSS 尺寸一樣、畫面更細
+    var outputSize: CGSize {
+        switch self {
+        case .landscape: CGSize(width: 3840, height: 2160)
+        case .portrait: CGSize(width: 2160, height: 3840)
+        case .square: CGSize(width: 1440, height: 1440)
+        }
+    }
+
     var label: String {
         switch self {
-        case .landscape: L("橫 1920×1080", "Landscape 1920×1080")
-        case .portrait: L("直 1080×1920", "Portrait 1080×1920")
+        case .landscape: L("橫 3840×2160（4K）", "Landscape 3840×2160 (4K)")
+        case .portrait: L("直 2160×3840（4K）", "Portrait 2160×3840 (4K)")
         case .square: L("方 1440×1440", "Square 1440×1440")
         }
     }
@@ -76,7 +86,7 @@ final class Exporter: ObservableObject {
     // MARK: - 輸出流程
 
     private func render(effect: Effect, paramsJSON: String, resolution: Resolution, camera: CameraState) async throws -> (URL, NSImage) {
-        let size = resolution.size
+        let size = resolution.outputSize
         let width = Int(size.width)
         let height = Int(size.height)
         let fps = effect.manifest.fps
@@ -96,6 +106,8 @@ final class Exporter: ObservableObject {
         NetworkBlock.install(on: configuration)
         let webView = WKWebView(frame: NSRect(origin: .zero, size: size), configuration: configuration)
         webView.setValue(false, forKey: "drawsBackground")
+        // 輸出尺寸比排版尺寸大時（4K），整頁放大，效果看到的視窗仍是 1920×1080 這種設計尺寸
+        webView.pageZoom = size.width / resolution.size.width
         window.contentView = webView
         window.orderFrontRegardless()
         defer { window.orderOut(nil) }
